@@ -1,0 +1,19 @@
+node_modules
+.next
+out
+.env
+.env.local
+leads.json
+*.tsbuildinfo
+.DS_Store
+
+# Source asset folders — the served copies live in public/assets
+/amenities
+/builder
+/floor-plans
+/hero-exterior
+/hoarding-banners
+/lifestyle-lake
+/location
+/masterplan
+/Google code

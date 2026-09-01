@@ -1,0 +1,179 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --header-h: 4.5rem; /* the wordmark lockup needs a little more height than a text logo */
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    @apply bg-paper font-sans text-body-lg text-ink-soft antialiased;
+  }
+
+  section[id] {
+    scroll-margin-top: calc(var(--header-h) + 1rem);
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display font-normal text-ink;
+    text-wrap: balance;
+  }
+
+  ::selection {
+    @apply bg-teal-800/20 text-ink;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-teal-800 ring-offset-2 ring-offset-paper;
+  }
+
+  .on-dark :focus-visible {
+    @apply ring-paper ring-offset-transparent;
+  }
+}
+
+@layer components {
+  /* ---------------------------------------------------------------- buttons */
+  .btn {
+    @apply inline-flex select-none items-center justify-center gap-2 rounded-full border-[0.8px]
+           px-7 py-3 text-[0.8125rem] font-semibold uppercase tracking-[0.14em]
+           transition-all duration-300 ease-brand disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  .btn-primary {
+    @apply border-transparent bg-navy-900 text-paper hover:bg-navy-800 hover:shadow-lift;
+  }
+  .btn-accent {
+    @apply border-transparent bg-teal-800 text-paper hover:bg-teal-700 hover:shadow-lift;
+  }
+  .btn-on-dark {
+    @apply border-transparent bg-paper text-navy-900 hover:bg-white hover:shadow-lift;
+  }
+  .btn-ghost-dark {
+    @apply border-paper/45 bg-transparent text-paper hover:border-paper hover:bg-paper/10;
+  }
+  .btn-ghost {
+    @apply border-ink/25 bg-transparent text-ink hover:border-ink/60 hover:bg-ink/[0.04];
+  }
+  .btn-sm {
+    @apply px-5 py-2 text-[0.6875rem] tracking-[0.16em];
+  }
+
+  /* --------------------------------------------------------------- eyebrows */
+  .eyebrow {
+    @apply font-sans text-eyebrow font-semibold uppercase text-teal-800;
+  }
+  .eyebrow-on-dark {
+    @apply font-sans text-eyebrow font-semibold uppercase text-sky-400;
+  }
+
+  /**
+   * The brand deck sets its own section titles in light, widely-tracked caps
+   * (COLOR / GRAPHIC ELEMENTS / THE LOGO). Reused here for section labels.
+   */
+  .brand-label {
+    @apply font-sans text-brand-title font-light uppercase text-ink;
+  }
+
+  /* ------------------------------------------------------- section rhythm */
+  .section-y {
+    @apply py-16 md:pt-section md:pb-section-lg;
+  }
+  .shell {
+    @apply mx-auto w-full max-w-shell px-5 sm:px-8 lg:px-10;
+  }
+
+  .hairline-rule {
+    @apply border-[0.8px] border-hairline;
+  }
+
+  /**
+   * Petal geometry is the brand's core graphic device — a square with two
+   * opposite corners taken out by quarter-arcs. Used on image panels so the
+   * photography is framed by the same shape language as the identity.
+   */
+  .petal-panel {
+    border-radius: 1.5rem;
+  }
+  @screen md {
+    .petal-panel {
+      border-radius: 14rem 1.5rem 14rem 1.5rem;
+    }
+    .petal-panel-alt {
+      border-radius: 1.5rem 14rem 1.5rem 14rem;
+    }
+    .petal-panel-soft {
+      border-radius: 14rem 1.5rem 1.5rem 1.5rem;
+    }
+  }
+
+  .link-underline {
+    @apply relative after:absolute after:inset-x-0 after:-bottom-0.5 after:h-px after:origin-left
+           after:scale-x-0 after:bg-current after:transition-transform after:duration-300
+           after:ease-brand hover:after:scale-x-100;
+  }
+
+  /**
+   * The Coax wordmark ships as artwork, then gets painted with a brand colour
+   * through a CSS mask — so it is never recoloured outside the approved palette
+   * and never re-typeset in a substitute face.
+   */
+  .wordmark {
+    display: block;
+    background-color: currentColor;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+  }
+  .wordmark-stacked {
+    -webkit-mask-image: url('/brand/wordmark-stacked.png');
+    mask-image: url('/brand/wordmark-stacked.png');
+    aspect-ratio: 1481 / 383;
+  }
+  .wordmark-single {
+    -webkit-mask-image: url('/brand/wordmark-single.png');
+    mask-image: url('/brand/wordmark-single.png');
+    aspect-ratio: 2222 / 136;
+  }
+}
+
+@layer utilities {
+  .text-shadow-hero {
+    text-shadow: 0 2px 24px rgba(4, 32, 58, 0.45);
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  /* Lead-gate blur on floor-plan teasers. */
+  .gated {
+    filter: blur(9px) saturate(0.75);
+    transform: scale(1.06);
+  }
+}
