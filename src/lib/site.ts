@@ -26,12 +26,22 @@ export const CONTACT = {
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.sridiralakecreek.in',
   address: 'Sy no 75/2, 64/4 & 64/6, Horamavu Agara, Bengaluru, Karnataka 560043',
   addressShort: 'Horamavu Agara, Bengaluru',
+  /** Kept separate from the call number so the two can diverge later. */
+  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '917411995037',
   /** TODO(launch): Karnataka RERA registration is mandatory before advertising. */
   rera: process.env.NEXT_PUBLIC_RERA_NUMBER || 'RERA No: [TO BE CONFIRMED]',
   callbackHours: process.env.NEXT_PUBLIC_CALLBACK_HOURS || '24',
 } as const;
 
-export const whatsappHref = (phone: string = CONTACT.phone) =>
+/**
+ * The brochure ships with the site, so the download always works. Point
+ * NEXT_PUBLIC_BROCHURE_URL at a CDN copy if you'd rather serve it elsewhere.
+ */
+export const BROCHURE_URL =
+  process.env.NEXT_PUBLIC_BROCHURE_URL || '/brochure/sridira-lake-creek-brochure.pdf';
+export const BROCHURE_FILENAME = 'Sridira-Lake-Creek-Brochure.pdf';
+
+export const whatsappHref = (phone: string = CONTACT.whatsapp) =>
   `https://wa.me/${phone.replace(/[^\d]/g, '')}?text=Hi%2C%20I%27m%20interested%20in%20Sridira%20Lake%20Creek`;
 
 export const NAV = [
@@ -138,22 +148,35 @@ export const AMENITY_CATEGORIES = [
   },
 ] as const;
 
+/**
+ * Full-bleed renders lifted from the digital brochure. The earlier
+ * `amenities-detail-*` files were flattened cutouts on a black field — they
+ * rendered as solid black panels and are no longer used anywhere.
+ */
 export const AMENITY_IMAGES = [
   {
-    src: '/assets/amenities/amenities-collage-01.jpg',
-    alt: 'Clubhouse, pool deck and social amenities at Sridira Lake Creek',
+    src: '/assets/gallery/clubhouse.jpg',
+    alt: 'The Sridira Lake Creek clubhouse, with planted terraces over a glazed double-height frontage',
   },
   {
-    src: '/assets/amenities/amenities-full-02.jpg',
-    alt: 'Landscaped amenity zones and forest trails',
+    src: '/assets/gallery/gym.jpg',
+    alt: 'Fitness studio with floor-to-ceiling glazing and a timber-battened ceiling',
   },
   {
-    src: '/assets/amenities/amenities-detail-03.jpg',
-    alt: 'Wellness and sports amenities across the podium',
+    src: '/assets/gallery/pool.jpg',
+    alt: 'The swimming pool and deck at Sridira Lake Creek',
   },
   {
-    src: '/assets/amenities/amenities-detail-04.jpg',
-    alt: 'Kids play zones and green maze',
+    src: '/assets/gallery/kids.jpg',
+    alt: "Children's play area set among landscaped lawns",
+  },
+  {
+    src: '/assets/gallery/sports.jpg',
+    alt: 'Half basketball court in the sports zone',
+  },
+  {
+    src: '/assets/gallery/deck.jpg',
+    alt: 'Timber pool deck and cabana lit at dusk',
   },
 ] as const;
 

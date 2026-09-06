@@ -46,8 +46,10 @@ export default function Hero() {
           </motion.div>
         </AnimatePresence>
         {/* Navy scrim — the brand's primary field colour, not a neutral black. */}
-        <div className="absolute inset-0 bg-gradient-to-b from-navy-950/75 via-navy-900/30 to-navy-950/90" />
-        <div className="absolute inset-0 bg-gradient-to-r from-navy-950/55 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-navy-950/80 via-navy-950/55 to-navy-950/95" />
+        <div className="absolute inset-0 bg-gradient-to-r from-navy-950/60 via-navy-950/25 to-navy-950/45" />
+        {/* Focused band behind the headline block. */}
+        <div className="absolute inset-x-0 bottom-0 h-[70%] bg-gradient-to-t from-navy-950/85 to-transparent" />
         <div className="absolute inset-0 text-paper">
           <PetalField opacity={0.05} />
         </div>

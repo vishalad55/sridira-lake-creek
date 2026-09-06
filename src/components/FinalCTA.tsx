@@ -19,10 +19,10 @@ export default function FinalCTA() {
           sizes="100vw"
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-navy-950/35" />
+        <div className="absolute inset-0 bg-navy-950/50" />
 
         <div className="shell relative py-16 md:py-24">
-          <div className="on-dark relative isolate mx-auto max-w-3xl overflow-hidden bg-navy-900/85 px-6 py-14 text-center backdrop-blur-[2px] sm:px-14 sm:py-16">
+          <div className="on-dark relative isolate mx-auto max-w-3xl overflow-hidden bg-navy-900/92 px-6 py-14 text-center backdrop-blur-[2px] sm:px-14 sm:py-16">
             <div className="absolute inset-0 text-paper">
               <PetalField opacity={0.06} />
             </div>

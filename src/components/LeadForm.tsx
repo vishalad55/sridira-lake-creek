@@ -1,13 +1,26 @@
 'use client';
 
 import { useId, useState } from 'react';
-import { Check, Loader2, Phone, ShieldCheck } from 'lucide-react';
+import { Check, Download, Loader2, Phone, ShieldCheck } from 'lucide-react';
 import { trackLead } from '@/lib/analytics';
-import { CONTACT } from '@/lib/site';
+import { BROCHURE_FILENAME, BROCHURE_URL, CONTACT } from '@/lib/site';
 import { cn } from '@/lib/cn';
 import { useLead } from './LeadProvider';
 
-const BROCHURE_URL = process.env.NEXT_PUBLIC_BROCHURE_URL || '';
+/**
+ * Kicks off the brochure download without navigating away from the thank-you
+ * state. Same-origin, so the `download` attribute is honoured.
+ */
+function startBrochureDownload() {
+  if (typeof document === 'undefined') return;
+  const a = document.createElement('a');
+  a.href = BROCHURE_URL;
+  a.download = BROCHURE_FILENAME;
+  a.rel = 'noopener';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
 
 type Variant = 'modal' | 'inline' | 'compact';
 
@@ -107,6 +120,9 @@ export default function LeadForm({ source, intent, variant = 'inline', onSuccess
       setFirstName(payload.name.split(' ')[0]);
       markUnlocked();
       setStatus('done');
+      // The brochure is what most of these CTAs promised — deliver it at once
+      // rather than making them wait for a human.
+      startBrochureDownload();
       onSuccess?.();
     } catch {
       setStatus('idle');
@@ -141,21 +157,19 @@ export default function LeadForm({ source, intent, variant = 'inline', onSuccess
           </p>
         </div>
 
-        {BROCHURE_URL ? (
+        <div className="flex flex-col gap-2">
           <a
             href={BROCHURE_URL}
-            download
-            className={cn('btn btn-sm', onDark ? 'btn-on-dark' : 'btn-primary')}
+            download={BROCHURE_FILENAME}
+            className={cn('btn btn-sm w-fit', onDark ? 'btn-on-dark' : 'btn-primary')}
           >
+            <Download className="h-3.5 w-3.5" aria-hidden />
             Download brochure
           </a>
-        ) : (
           <p className={cn('text-xs leading-relaxed', onDark ? 'text-mist-300' : 'text-ink-faint')}>
-            {/* TODO(launch): set NEXT_PUBLIC_BROCHURE_URL to serve the PDF instantly. */}
-            The brochure and full floor plans are on their way to {"your inbox"}. Floor plans on this page are now
-            unlocked.
+            Your download has started. Every floor plan on this page is now unlocked.
           </p>
-        )}
+        </div>
 
         <a
           href={`tel:${CONTACT.phone}`}

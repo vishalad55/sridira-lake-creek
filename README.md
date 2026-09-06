@@ -132,16 +132,98 @@ place), a thank-you state promises a callback within `NEXT_PUBLIC_CALLBACK_HOURS
 hours, the brochure is served immediately if `NEXT_PUBLIC_BROCHURE_URL` is set,
 and Meta Pixel `Lead` + GA4 `generate_lead` fire with a `source` parameter.
 
-### Delivery chain (`src/app/api/lead/route.ts`)
+### Where leads go (`src/lib/leads.ts`)
 
-A lead is only reported as lost if every channel fails:
+Primary sinks run **in parallel** — each serves a different job, so every lead
+goes to all of them:
 
-1. **POST to the GHL inbound webhook** — `GHL_WEBHOOK_URL`, 8s timeout
-2. **Email via Resend** — `RESEND_API_KEY` + `LEAD_NOTIFY_EMAIL`
-3. **Append to `leads.json`** — last-resort local sink
+| Sink | Purpose | Configured by |
+| --- | --- | --- |
+| **GoHighLevel** | Sales follow-up | `GHL_WEBHOOK_URL` |
+| **Google Sheet** | Reporting / tracking | service account, or Apps Script URL |
+| **Supabase** | Durable storage | `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` |
 
-If all three fail the payload is logged as a structured error and the visitor is
-told to call instead.
+If none is configured, or all of them fail, it falls back to **Resend** email,
+then to `leads.json` in dev. Only if everything fails does the visitor see an
+error and get told to call. A sink that is configured but failing is logged
+even when another sink saved the lead.
+
+Each sink self-disables when its env vars are missing, so preview deploys and
+local dev work with zero configuration.
+
+#### Google Sheet — option A: service account (recommended)
+
+Writes straight to the Sheets API, no public endpoint. The header row is
+created automatically on the first write.
+
+1. [Google Cloud console](https://console.cloud.google.com/) → create (or pick) a project
+2. **APIs & Services → Library** → enable **Google Sheets API**
+3. **APIs & Services → Credentials → Create credentials → Service account**
+4. Open the service account → **Keys → Add key → Create new key → JSON**
+5. **Share the spreadsheet** with the `client_email` from that JSON, as **Editor** —
+   this is the step people miss; without it you get a 403
+6. In Vercel set:
+   - `GOOGLE_SERVICE_ACCOUNT_EMAIL` = the `client_email` value
+   - `GOOGLE_PRIVATE_KEY` = the `private_key` value, pasted whole including the
+     `-----BEGIN PRIVATE KEY-----` / `-----END PRIVATE KEY-----` lines
+
+#### Google Sheet — option B: Apps Script web app (quicker)
+
+Extensions → Apps Script on the spreadsheet, paste this, then **Deploy → New
+deployment → Web app**, execute as *Me*, access *Anyone*. Put the `/exec` URL
+in `GOOGLE_SHEETS_WEBHOOK_URL`.
+
+```javascript
+function doPost(e) {
+  var body = JSON.parse(e.postData.contents);
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(body.tab) || ss.insertSheet(body.tab);
+  if (sheet.getLastRow() === 0) sheet.appendRow(body.headers);
+  sheet.appendRow(body.row);
+  return ContentService.createTextOutput(JSON.stringify({ ok: true }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+```
+
+Note this endpoint is public by design — anyone with the URL can append rows.
+The service-account route avoids that.
+
+#### Supabase
+
+Run once in the SQL editor:
+
+```sql
+create table if not exists public.leads (
+  id            bigint generated always as identity primary key,
+  created_at    timestamptz not null default now(),
+  name          text not null,
+  phone         text not null,
+  email         text not null,
+  configuration text,
+  visit_slot    date,
+  consent       boolean not null default false,
+  source        text,
+  intent        text,
+  page_url      text,
+  utm           jsonb not null default '{}'::jsonb
+);
+
+alter table public.leads enable row level security;
+-- No policies: the service-role key used by /api/lead bypasses RLS, and
+-- nothing else should be able to read or write this table.
+```
+
+`SUPABASE_URL` is injected by the Vercel Supabase integration. Add
+`SUPABASE_SERVICE_ROLE_KEY` yourself (Supabase → Settings → API). **Never**
+prefix it `NEXT_PUBLIC_` — it bypasses row-level security.
+
+### The brochure
+
+The compressed brochure ships at
+`public/brochure/sridira-lake-creek-brochure.pdf` (9.9 MB, down from 71 MB —
+images re-encoded at 150 DPI, text left as vector). It downloads automatically
+the moment a form is submitted, and the thank-you state also shows a manual
+button. To serve it from a CDN instead, set `NEXT_PUBLIC_BROCHURE_URL`.
 
 ---
 
@@ -192,8 +274,9 @@ the source material.
 - [ ] **Possession date.** Marked "TBD — confirm with sales team" in the FAQ and
       footer.
 - [ ] **Pricing and payment plan.** Deliberately absent sitewide.
-- [ ] **Brochure PDF.** Host it and set `NEXT_PUBLIC_BROCHURE_URL` so it is
-      delivered on submit rather than promised by email.
+- [ ] **GHL webhook.** `GHL_WEBHOOK_URL` is still unset, so leads currently
+      reach the Google Sheet and Supabase but not the CRM. Add it when ready —
+      no code change needed.
 - [ ] **Social links.** Placeholder `#` hrefs in `src/components/Footer.tsx`.
 - [ ] **Images.** Everything under `public/assets/` is brochure-resolution
       (~1200px) extracted from the source PDFs. Swap in the marketing team's

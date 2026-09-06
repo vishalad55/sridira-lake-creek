@@ -81,7 +81,8 @@ export default function OpenByDesign() {
             sizes="100vw"
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-navy-950/45" />
+          <div className="absolute inset-0 bg-navy-950/55" />
+          <div className="absolute inset-0 bg-gradient-to-r from-navy-950/80 via-navy-950/40 to-transparent" />
           <div className="on-dark absolute inset-0 flex items-center">
             <div className="shell">
               <Reveal>

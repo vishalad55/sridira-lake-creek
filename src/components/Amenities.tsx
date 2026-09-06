@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { cn } from '@/lib/cn';
 import { Baby, Dumbbell, Flower2, PartyPopper, Trees, Waves } from 'lucide-react';
 import { AMENITY_CATEGORIES, AMENITY_IMAGES, LEAD_SOURCES } from '@/lib/site';
 import LeadCTA from './ui/LeadCTA';
@@ -76,33 +77,30 @@ export default function Amenities() {
           })}
         </ul>
 
-        {/* Amenity imagery — a wide lead panel plus a supporting strip. */}
-        <div className="mt-10 grid gap-4 md:grid-cols-3">
-          <Reveal className="md:col-span-2">
-            <div className="petal-panel relative aspect-[16/10] overflow-hidden">
-              <Image
-                src={AMENITY_IMAGES[0].src}
-                alt={AMENITY_IMAGES[0].alt}
-                fill
-                sizes="(max-width: 768px) 100vw, 62vw"
-                className="object-cover"
-              />
-            </div>
-          </Reveal>
-          <Reveal delay={0.08} className="grid gap-4">
-            {AMENITY_IMAGES.slice(1, 3).map((image) => (
-              <div key={image.src} className="relative aspect-[16/9] overflow-hidden rounded-card md:aspect-auto md:h-full">
+        {/* Amenity imagery — portrait renders from the brochure, on a 3-up grid.
+            The first and last tiles carry the petal corner so the identity's
+            shape language frames the photography. */}
+        <ul className="mt-10 grid grid-cols-2 gap-4 lg:grid-cols-3">
+          {AMENITY_IMAGES.map((image, i) => (
+            <Reveal as="li" key={image.src} delay={(i % 3) * 0.06}>
+              <div
+                className={cn(
+                  'relative aspect-[3/4] overflow-hidden rounded-card',
+                  i === 0 && 'petal-panel',
+                  i === AMENITY_IMAGES.length - 1 && 'petal-panel petal-panel-alt',
+                )}
+              >
                 <Image
                   src={image.src}
                   alt={image.alt}
                   fill
-                  sizes="(max-width: 768px) 100vw, 31vw"
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 31vw"
                   className="object-cover"
                 />
               </div>
-            ))}
-          </Reveal>
-        </div>
+            </Reveal>
+          ))}
+        </ul>
       </div>
     </section>
   );

@@ -25,7 +25,7 @@ export default function Residences() {
               sizes="(max-width: 1280px) 100vw, 1248px"
               className="object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-navy-950/90 via-navy-950/45 to-navy-950/15" />
+            <div className="absolute inset-0 bg-gradient-to-t from-navy-950/95 via-navy-950/65 to-navy-950/25" />
           </div>
 
           <div className="on-dark absolute inset-x-0 bottom-0 p-6 sm:p-10 lg:p-14">
