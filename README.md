@@ -217,6 +217,29 @@ alter table public.leads enable row level security;
 `SUPABASE_SERVICE_ROLE_KEY` yourself (Supabase → Settings → API). **Never**
 prefix it `NEXT_PUBLIC_` — it bypasses row-level security.
 
+#### Checking it works
+
+Set `LEAD_HEALTH_TOKEN` to any random string, then open:
+
+```
+https://<your-domain>/api/lead/health?token=<that string>
+```
+
+It live-checks every sink and, when one is broken, says exactly why and what to
+change. With the variable unset the route 404s, so it is safe to leave in place.
+
+```json
+{
+  "ok": true,
+  "summary": "2 of 3 sinks working.",
+  "sinks": [
+    { "sink": "ghl", "configured": false, "ok": false, "detail": "not-configured" },
+    { "sink": "sheets", "configured": true, "ok": true, "detail": "reachable · range 'website leads'!A1:A1" },
+    { "sink": "supabase", "configured": true, "ok": true, "detail": "reachable · table \"leads\"" }
+  ]
+}
+```
+
 ### The brochure
 
 The compressed brochure ships at

@@ -174,6 +174,17 @@ export async function pushToGhl(lead: LeadPayload): Promise<Delivery> {
 const SHEET_ID = process.env.GOOGLE_SHEETS_ID || '1-1oUBpa2dZDwpzBxK5ZF7z8dcKPgD0hL8xN15gO3jVk';
 const SHEET_TAB = process.env.GOOGLE_SHEETS_TAB || 'website leads';
 
+/**
+ * Builds an A1 range. A sheet name containing anything but letters, digits and
+ * underscores — a space, in our case ("website leads") — must be wrapped in
+ * single quotes, with any embedded quote doubled. Without this the Sheets API
+ * rejects the call with `400 Unable to parse range`.
+ */
+export function a1Range(tab: string, cells: string) {
+  const name = /^[A-Za-z0-9_]+$/.test(tab) ? tab : `'${tab.replace(/'/g, "''")}'`;
+  return `${name}!${cells}`;
+}
+
 /** Access tokens live ~1h; cache across warm invocations. */
 let cachedToken: { token: string; expiresAt: number } | null = null;
 /** Header check only needs to happen once per cold start. */
@@ -227,7 +238,7 @@ async function ensureHeaderRow(token: string) {
   if (headerChecked) return;
   headerChecked = true;
 
-  const range = encodeURIComponent(`${SHEET_TAB}!A1:A1`);
+  const range = encodeURIComponent(a1Range(SHEET_TAB, 'A1:A1'));
   const res = await withTimeout(
     (signal) =>
       fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}`, {
@@ -241,7 +252,7 @@ async function ensureHeaderRow(token: string) {
   const json = (await res.json()) as { values?: string[][] };
   if (json.values?.length) return;
 
-  const writeRange = encodeURIComponent(`${SHEET_TAB}!A1`);
+  const writeRange = encodeURIComponent(a1Range(SHEET_TAB, 'A1'));
   await withTimeout(
     (signal) =>
       fetch(
@@ -274,7 +285,7 @@ export async function appendToSheet(lead: LeadPayload): Promise<Delivery> {
       const token = await getAccessToken(email, normalisePrivateKey(rawKey));
       await ensureHeaderRow(token);
 
-      const range = encodeURIComponent(`${SHEET_TAB}!A:N`);
+      const range = encodeURIComponent(a1Range(SHEET_TAB, 'A:N'));
       const res = await withTimeout(
         (signal) =>
           fetch(
@@ -320,6 +331,115 @@ export async function appendToSheet(lead: LeadPayload): Promise<Delivery> {
   }
 
   return { channel: 'sheets', ok: false, detail: 'not-configured' };
+}
+
+/* ------------------------------------------------------------ diagnostics */
+
+export type SinkStatus = {
+  sink: string;
+  configured: boolean;
+  ok?: boolean;
+  detail?: string;
+  hint?: string;
+};
+
+/**
+ * Live round-trip against the Sheets API — reads the tab's first cell using the
+ * exact same range builder the writer uses, so a green result here means a
+ * write will land.
+ */
+export async function checkSheetAccess(): Promise<SinkStatus> {
+  const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+  const rawKey = process.env.GOOGLE_PRIVATE_KEY;
+  const webhook = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
+  const base = { sink: 'sheets', configured: Boolean((email && rawKey) || webhook) };
+
+  if (!base.configured) {
+    return { ...base, ok: false, detail: 'not-configured', hint: 'Set GOOGLE_SERVICE_ACCOUNT_EMAIL + GOOGLE_PRIVATE_KEY (then redeploy).' };
+  }
+  if (!email || !rawKey) {
+    return { ...base, ok: true, detail: 'apps-script-webhook (not probed)' };
+  }
+
+  const range = a1Range(SHEET_TAB, 'A1:A1');
+
+  try {
+    const token = await getAccessToken(email, normalisePrivateKey(rawKey));
+    const res = await withTimeout(
+      (signal) =>
+        fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}`, {
+          headers: { Authorization: `Bearer ${token}` },
+          signal,
+        }),
+      9000,
+    );
+
+    if (res.ok) {
+      return { ...base, ok: true, detail: `reachable · sheet ${SHEET_ID.slice(0, 8)}… · range ${range}` };
+    }
+
+    const text = await res.text().catch(() => '');
+    const hint =
+      res.status === 403
+        ? `Share the spreadsheet with ${email} as an Editor, and make sure the Google Sheets API is enabled.`
+        : res.status === 400
+          ? `The tab "${SHEET_TAB}" does not exist in that spreadsheet — check the tab name at the bottom of the sheet.`
+          : res.status === 404
+            ? 'GOOGLE_SHEETS_ID does not match any spreadsheet.'
+            : 'See the raw response below.';
+    return { ...base, ok: false, detail: `HTTP ${res.status} ${text.slice(0, 200)}`, hint };
+  } catch (err) {
+    const msg = errText(err);
+    const hint = /DECODER|asn1|PEM|routines/i.test(msg)
+      ? 'GOOGLE_PRIVATE_KEY is malformed — recopy the whole private_key value from the JSON, including the BEGIN/END lines.'
+      : /invalid_grant|account not found/i.test(msg)
+        ? 'GOOGLE_SERVICE_ACCOUNT_EMAIL does not match a real service account.'
+        : 'Unexpected error talking to Google.';
+    return { ...base, ok: false, detail: msg, hint };
+  }
+}
+
+export async function checkSupabaseAccess(): Promise<SinkStatus> {
+  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const table = process.env.SUPABASE_LEADS_TABLE || 'leads';
+  const base = { sink: 'supabase', configured: Boolean(url && key) };
+
+  if (!url || !key) {
+    return { ...base, ok: false, detail: 'not-configured', hint: 'Set SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY.' };
+  }
+
+  try {
+    const res = await withTimeout(
+      (signal) =>
+        fetch(`${url.replace(/\/$/, '')}/rest/v1/${table}?select=id&limit=1`, {
+          headers: { apikey: key, Authorization: `Bearer ${key}` },
+          signal,
+        }),
+      8000,
+    );
+    if (res.ok) return { ...base, ok: true, detail: `reachable · table "${table}"` };
+    const text = await res.text().catch(() => '');
+    return {
+      ...base,
+      ok: false,
+      detail: `HTTP ${res.status} ${text.slice(0, 200)}`,
+      hint: res.status === 404 ? `Table "${table}" does not exist — run the create table SQL.` : 'Check the service-role key.',
+    };
+  } catch (err) {
+    return { ...base, ok: false, detail: errText(err) };
+  }
+}
+
+export function checkGhl(): SinkStatus {
+  const configured = Boolean(process.env.GHL_WEBHOOK_URL);
+  return {
+    sink: 'ghl',
+    configured,
+    ok: configured,
+    detail: configured ? 'webhook set (not probed — probing would create a test lead)' : 'not-configured',
+    hint: configured ? undefined : 'Set GHL_WEBHOOK_URL when the CRM webhook is ready.',
+  };
 }
 
 /* --------------------------------------------------------------- Supabase */
