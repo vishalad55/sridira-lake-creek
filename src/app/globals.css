@@ -162,7 +162,11 @@
 
 @layer utilities {
   .text-shadow-hero {
-    text-shadow: 0 2px 24px rgba(4, 32, 58, 0.45);
+    /* Two layers: a tight one for edge definition against busy photography,
+       and a wide soft one for overall separation. Lets the scrim stay light. */
+    text-shadow:
+      0 1px 3px rgba(4, 32, 58, 0.55),
+      0 4px 28px rgba(4, 32, 58, 0.45);
   }
   .no-scrollbar::-webkit-scrollbar {
     display: none;

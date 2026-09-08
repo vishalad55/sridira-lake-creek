@@ -61,16 +61,16 @@ export const NAV = [
 
 export const HERO_IMAGES = [
   {
-    src: '/assets/hero-exterior/cover-01.jpg',
-    alt: 'Sridira Lake Creek towers at dusk overlooking Horamavu Lake',
+    src: '/assets/hero/dusk-towers.jpg',
+    alt: 'The twin towers of Sridira Lake Creek lit at dusk, reflected in Horamavu Lake',
   },
   {
-    src: '/assets/hoarding-banners/hoarding-003-006.jpg',
-    alt: 'Lake-facing elevation of Sridira Lake Creek, Horamavu',
+    src: '/assets/hero/lake-tower.jpg',
+    alt: 'Sridira Lake Creek seen across the open water of Horamavu Lake',
   },
   {
-    src: '/assets/hero-exterior/intro-lakeside-02.jpg',
-    alt: 'Lakeside approach to the Sridira Lake Creek residences',
+    src: '/assets/hero/open-water.jpg',
+    alt: 'The open water and wooded far bank of Horamavu Lake',
   },
 ] as const;
 
@@ -78,24 +78,25 @@ export const HERO_IMAGES = [
 
 export const QUICK_FACTS = [
   { value: '4.48', unit: 'Acres', caption: 'with 70% open spaces' },
-  { value: '2', unit: 'Towers', caption: '28 floors each' },
-  { value: '336', unit: 'Homes', caption: 'in Phase 1' },
+  { value: '2', unit: 'Towers', caption: '30+ floors each' },
+  { value: '360', unit: 'Homes', caption: 'featuring 12 penthouses' },
   { value: '270°', unit: 'Views', caption: 'corner-facing homes' },
-  { value: '50+', unit: 'Amenities', caption: 'biophilic architecture' },
+  { value: 'Biophilic', unit: 'Architecture', caption: '' },
+  { value: 'Sensorial', unit: 'Living', caption: '' },
 ] as const;
 
 /* --------------------------------------------------------- open by design */
 
 export const OPEN_BY_DESIGN = {
-  eyebrow: 'Open by design',
-  heading: 'Life moves differently by the water.',
+  eyebrow: 'Life flows with the water',
+  heading: 'Where nature and residences merge.',
   body: 'Spaces designed around biophilic principles.',
   features: [
     { icon: 'expand', title: 'Expansive layouts', note: 'Room to live, not just to fit.' },
     { icon: 'view', title: '270° open corner residences', note: 'Light and air from three sides.' },
     { icon: 'water', title: 'Direct lake access', note: 'Horamavu Lake at your doorstep.' },
     { icon: 'leaf', title: 'Curated gardens', note: 'Planted, not landscaped as an afterthought.' },
-    { icon: 'shield', title: 'No-neighbour concept', note: 'No home faces another, directly.' },
+    { icon: 'shield', title: 'Open sky views', note: 'Nothing built between you and the horizon.' },
   ],
 } as const;
 
@@ -107,11 +108,11 @@ export const RESIDENCES = {
   config: {
     tag: 'The only configuration',
     title: '3 BHK + 3T',
-    size: '1700–1870 Sft',
+    size: '1715–1870 SFT (SBUA)',
     cta: 'Explore Floor Plans',
     highlights: [
       { label: 'Corner home', note: '270° panoramic views' },
-      { label: 'No-neighbour', note: 'No direct-facing unit' },
+      { label: 'Open sky views', note: 'Nothing built in front' },
       { label: 'Cross ventilation', note: 'Openings on three sides' },
       { label: 'Lake orientation', note: 'Towards Horamavu Lake' },
     ],
@@ -129,7 +130,14 @@ export const AMENITY_CATEGORIES = [
   {
     name: 'Sports & Recreation',
     icon: 'sports',
-    items: ['Pickleball Court', 'Cricket Pitch', 'Badminton Court', 'Basketball Court', 'Jogging Track'],
+    items: [
+      'Pickleball Court',
+      'Cricket Pitch',
+      'Tennis Court',
+      'Badminton Court',
+      'Basketball Court',
+      'Jogging Track',
+    ],
   },
   {
     name: 'Kids',
@@ -205,20 +213,24 @@ export const LOCATION = {
 /* ------------------------------------------------------------ master plan */
 
 export const MASTER_PLAN = {
-  heading: 'Crafted around your lifestyle.',
+  heading: 'Crafted to elegance.',
   image: '/assets/masterplan/masterplan-diagram-01.jpg',
-  /** Condensed from the 30-point brochure legend to the visitor-relevant highlights. */
+  /**
+   * Ten of the thirty numbered points on the sanctioned plan. The numbers are
+   * the brochure's own, so they line up with the diagram rather than being
+   * renumbered 1-10.
+   */
   legend: [
-    'Entrance portal',
-    'Drop-off plaza',
-    'Clubhouse entry plaza',
-    'Pool deck & swimming pool',
-    "Kid's pool",
-    'Jogging track loop (400m)',
-    'Green maze',
-    'Forest trail',
-    'Urban forest',
-    'Tree bosquet sitout',
+    { n: 1, label: 'Entrance portal & Drop off plaza' },
+    { n: 3, label: 'Jogging track loop 400m' },
+    { n: 4, label: 'Pool deck' },
+    { n: 6, label: 'Swimming pool with Feature wall' },
+    { n: 7, label: "Kid's pool" },
+    { n: 9, label: 'Green maze' },
+    { n: 11, label: 'Forest trail' },
+    { n: 24, label: 'Bamboo forest & trail' },
+    { n: 27, label: 'Celebration lawn' },
+    { n: 30, label: 'Floating stage in Koi pond' },
   ],
 } as const;
 
@@ -229,7 +241,8 @@ export type FloorPlan = {
   label: string;
   config: string;
   sft: string;
-  plinth: string;
+  /** Orientation, as given in the brochure. */
+  facing: string;
   image: string;
   /** Crop window — the brochure scans two layouts per sheet. */
   position: string;
@@ -239,54 +252,54 @@ export const FLOOR_PLANS: FloorPlan[] = [
   {
     id: 'flat-01',
     label: 'Flat 01',
-    config: '3BHK + 3T',
-    sft: '1810 Sft',
-    plinth: 'Plinth 126.42 Sqm',
+    config: '3BHK',
+    sft: 'SBUA 1835 SFT',
+    facing: 'West Facing',
     image: '/assets/floor-plans/flat-01-02.jpg',
     position: '22% 50%',
   },
   {
     id: 'flat-02',
     label: 'Flat 02',
-    config: '3BHK + 3T',
-    sft: '1765 Sft',
-    plinth: 'Plinth 123.33 Sqm',
+    config: '3BHK',
+    sft: 'SBUA 1762 SFT',
+    facing: 'North Facing',
     image: '/assets/floor-plans/flat-01-02.jpg',
     position: '78% 50%',
   },
   {
     id: 'flat-03',
     label: 'Flat 03',
-    config: '3BHK + 3T',
-    sft: '1831 Sft',
-    plinth: 'Plinth 127.92 Sqm',
+    config: '3BHK',
+    sft: 'SBUA 1830 SFT',
+    facing: 'West Facing',
     image: '/assets/floor-plans/flat-03-04.jpg',
     position: '22% 50%',
   },
   {
     id: 'flat-04',
     label: 'Flat 04',
-    config: '3BHK + 3T',
-    sft: '1830 Sft',
-    plinth: 'Plinth 127.81 Sqm',
+    config: '3BHK',
+    sft: 'SBUA 1830 SFT',
+    facing: 'East Facing',
     image: '/assets/floor-plans/flat-03-04.jpg',
     position: '78% 50%',
   },
   {
     id: 'flat-05',
     label: 'Flat 05',
-    config: '3BHK + 3T',
-    sft: '1700 Sft',
-    plinth: 'Plinth 118.81 Sqm',
+    config: '3BHK',
+    sft: 'SBUA 1715 SFT',
+    facing: 'East Facing',
     image: '/assets/floor-plans/flat-05-06-context.jpg',
     position: '22% 50%',
   },
   {
     id: 'flat-06',
     label: 'Flat 06',
-    config: '3BHK + 3T',
-    sft: '1870 Sft',
-    plinth: 'Plinth 130.59 Sqm',
+    config: '3BHK',
+    sft: 'SBUA 1870 SFT',
+    facing: 'East Facing',
     image: '/assets/floor-plans/flat-05-06-context.jpg',
     position: '78% 50%',
   },
@@ -302,97 +315,98 @@ export const SPECIFICATIONS = [
   {
     group: 'Doors',
     items: [
-      'Main door — Engineered wooden door with premium hardware.',
-      'Internal doors — Engineered wooden door with premium hardware.',
-      'Toilet doors — Flush doors with laminate finish.',
+      'Main door: Engineered Veneer Finish Door with premium hardware and digital lock provision.',
+      'Internal doors: Engineered Veneer Finish Doors with premium hardware',
+      'Toilet Doors: Engineered Doors with waterproof laminate finish.',
     ],
   },
   {
-    group: 'Windows & Sliding Doors',
+    group: 'Windows',
+    items: ['Premium uPVC Sliding Windows with mosquito mesh'],
+  },
+  {
+    group: 'Flooring',
     items: [
-      '2.5 track uPVC windows and 3 track uPVC sliding doors with clear glass and mosquito mesh provision (Aparna/Wintech/NCL or equivalent)',
+      'Living, Dining & Kitchen: 800×1600 mm Premium Vitrified Tiles',
+      'Master Bedroom: Laminated Wooden Flooring',
+      'Other Bedrooms: Premium Vitrified Tiles',
+      'Balcony: Anti-skid Tiles',
+      'Bathrooms: Designer wall tiles dadoing up to false ceiling for toilets, Premium Anti-skid Tiles for flooring',
     ],
   },
   {
-    group: 'Flooring — Apartment',
+    group: 'Common Areas',
+    items: ['Granite and Vitrified Tiles for corridors', 'Granite for staircase areas'],
+  },
+  {
+    group: 'Bathrooms',
     items: [
-      'Vitrified tiles in living, dining & kitchen.',
-      'Master bedroom — laminated wooden flooring.',
-      'Other bedrooms — vitrified tiles.',
-      'Balcony & utility — anti-skid ceramic flooring.',
-      'Toilets — vitrified/ceramic tiles and dado up to 7 feet / ceiling height.',
+      'Premium Sanitary Ware & CP Fittings Jaguar or equivalent',
+      'Wall Hung WC',
+      'Provision for Geyser',
+      'Exhaust Fan Provision',
     ],
   },
   {
-    group: 'Flooring — Common',
+    group: 'Kitchen & Utility',
     items: [
-      'Corridors — Granite/vitrified tiles.',
-      'Staircase — granite flooring.',
-      'Lift lobby — granite flooring.',
-    ],
-  },
-  {
-    group: 'Toilets',
-    items: [
-      'Sanitary fixtures of reputed make in all bathrooms.',
-      'Chromium plated fittings of reputed make.',
-      'Plumbing & electrical provision for geysers.',
-      'Electrical provision for exhaust fans.',
-    ],
-  },
-  {
-    group: 'Kitchen/Utility',
-    items: [
-      'Provision for water purifier and sink in kitchen.',
-      'Provision for sink and washing machine in utility.',
-      'Provision for chimney and hob.',
+      'Water Purifier Provision',
+      'Chimney & Hob Electrical Point',
+      'Utility Sink and Washing Machine Provision',
     ],
   },
   {
     group: 'Balcony Railing',
-    items: ['MS handrail as per design.'],
+    items: ['MS railing'],
   },
   {
     group: 'Electrical',
     items: [
-      'One TV point in living room and MBR.',
-      'Bescom power supply — 5KW 3-phase supply.',
-      'Power backup of 2KW for apartment (lighting circuit).',
-      'Concealed copper wiring with modular switches.',
-      'ELCB for safety.',
-      'Internet points in bedrooms, living & family room.',
-      'Split AC provision in all rooms and living room.',
+      'BESCOM Power Supply',
+      '100% DG Backup for all Lighting, Fan Power Points inside apartments',
+      'Modular Switches (Legrand/Schneider or equivalent)',
+      'ELCB & MCB',
+      'TV, Internet & Telephone Points',
+      'Split AC Provision',
+      'Provision for Home Automation (optional)',
     ],
   },
   {
     group: 'Painting',
     items: [
-      'Interior — smooth putty finish with premium emulsion paint.',
-      'Exterior — weatherproof emulsion.',
+      'Interior areas: Acrylic Emulsion Paint over Putty Finish',
+      'Exterior: Weatherproof Exterior Grade Paint along with texture as per elevation',
     ],
   },
   {
     group: 'Car Parking',
-    items: ['Covered car parking in basement.'],
+    items: ['Covered Car Park for each Apartment with EV Charging Provision.'],
   },
   {
     group: 'Elevators',
     items: [
-      '3 passenger elevators per tower.',
-      '1 separate service lift per tower.',
-      'Automatic high-speed elevators.',
+      '3 High-Speed Passenger Elevators for each Tower',
+      '1 Service/Fire Lift',
+      'Reputed Make (Schindler/KONE/Otis/Johnson or equivalent) with Automatic Rescue Device',
     ],
   },
   {
-    group: 'Common Area',
+    group: 'Common Features',
     items: [
-      '100% power backup for common areas.',
-      'Grand entrance with security room & compound wall.',
-      'Solar-powered common lighting.',
-      'EV charging provision.',
-      'Underground electrical, plumbing & drainage lines.',
-      'Sewage Treatment Plant (STP), rainwater harvesting & WTP.',
-      'Visitor parking.',
+      'Grand Entrance Lobby',
+      'Designer Reception Lobby',
+      'CCTV Surveillance for common areas',
+      'Boom Barrier',
+      'Solar Lighting for Common Areas',
+      '100% DG Backup for Common Areas',
+      'Sewage Treatment Plant (STP)',
+      'Recycled Water for Landscaping & Flushing',
+      'Water Softening Plant',
+      'Rainwater Harvesting',
+      'Organic Waste Converter',
+      'Segregation of Waste at Source',
+      'Fire Fighting System as per NBC',
+      'Visitor Parking',
     ],
   },
 ] as const;
@@ -401,7 +415,7 @@ export const SPECIFICATIONS = [
 
 export const BUILDER = {
   heading: 'Built by Allure Ventures & SRIDIRA Projects',
-  body: 'Technology-driven construction across Telangana, Karnataka & Andhra Pradesh — delivering residential, commercial, and industrial spaces built with precision and purpose.',
+  body: 'Technology-driven construction across South India — delivering residential, commercial, and industrial spaces built with precision and purpose.',
   portfolio: [
     { name: 'Allure One', status: 'Completed', note: '' },
     { name: 'Allure Business Park', status: 'Completed', note: 'Hyderabad' },
@@ -409,7 +423,7 @@ export const BUILDER = {
     { name: 'Sridira Mokila Villas', status: 'Under construction', note: '' },
   ],
   consultants:
-    'Principal Architects — Aslam Architects · MEP Consultants — Design Tree Consultants · Landscape Architects — Dharitri Landscape',
+    'Principal Architects — Aslam Architects · SMEPF Consultants — Design Tree Consultants · Landscape Architects — Dharitri Landscape',
 } as const;
 
 /* -------------------------------------------------------------------- FAQ */
@@ -417,11 +431,15 @@ export const BUILDER = {
 export const FAQS = [
   {
     q: 'What configurations are available at Sridira Lake Creek?',
-    a: 'Phase 1 offers a single configuration — 3 BHK + 3T, ranging from 1700 to 1870 Sft across six layouts (Flat 01 to Flat 06). Every home is designed as a corner residence with 270° panoramic views and no direct-facing neighbours. Unlock any floor plan above to see the full layout and plinth areas.',
+    a: 'Phase 1 offers a single configuration — 3 BHK, ranging from 1715 to 1870 SFT (SBUA) across six layouts (Flat 01 to Flat 06), in west, north and east facing orientations. Every home is designed as a corner residence with 270° panoramic views. Unlock any floor plan above to see the full layout.',
+  },
+  {
+    q: 'How many towers, floors and homes are there?',
+    a: '2 towers of 30+ floors each, holding 360 homes in Phase 1, including 12 penthouses. The project sits on 4.48 acres with 70% open space.',
   },
   {
     q: 'What is included in the 50+ amenities?',
-    a: 'Amenities are grouped into six worlds: Wellness (yoga pods, meditation zone, bamboo and palm forests, relaxation trail), Sports & Recreation (pickleball, cricket pitch, badminton, basketball, jogging track), Kids (play areas, toddler zone, kids amphitheatre, green maze), Nature (urban forest, forest trail, fragrant tree plaza, lakeside path), Water Experiences (swimming pool, kids pool, koi pond, waterfall) and Social (clubhouse, party lawn, amphitheatre, floating stage, workshop plaza).',
+    a: 'Amenities are grouped into six worlds: Wellness (yoga pods, meditation zone, bamboo and palm forests, relaxation trail), Sports & Recreation (pickleball, cricket pitch, tennis, badminton, basketball, jogging track), Kids (play areas, toddler zone, kids amphitheatre, green maze), Nature (urban forest, forest trail, fragrant tree plaza, lakeside path), Water Experiences (swimming pool, kids pool, koi pond, waterfall) and Social (clubhouse, party lawn, amphitheatre, floating stage, workshop plaza).',
   },
   {
     q: 'How far is Sridira Lake Creek from KR Puram, Indiranagar and the airport?',
@@ -429,7 +447,7 @@ export const FAQS = [
   },
   {
     q: 'Who is developing Sridira Lake Creek?',
-    a: 'The project is developed by Allure Ventures and SRIDIRA Projects — technology-driven builders working across Telangana, Karnataka and Andhra Pradesh, led by directors Dilip C. Byra and Ravi Anem. Design consultants include Aslam Architects (architecture), Design Tree Consultants (MEP) and Dharitri Landscape (landscape).',
+    a: 'The project is developed by Allure Ventures and SRIDIRA Projects — technology-driven builders working across South India. Design consultants include Aslam Architects (architecture), Design Tree Consultants (SMEPF) and Dharitri Landscape (landscape).',
   },
   {
     q: 'Is Sridira Lake Creek RERA registered?',

@@ -7,7 +7,7 @@ import Reveal from './ui/Reveal';
 
 const PROMISES = [
   { icon: IndianRupee, title: 'Current price sheet', note: 'Pre-launch pricing, shared privately.' },
-  { icon: FileText, title: 'All six floor plans', note: 'Full resolution, with plinth areas.' },
+  { icon: FileText, title: 'All six floor plans', note: 'Full resolution, all six layouts.' },
   { icon: CalendarClock, title: 'A callback', note: `Within ${CONTACT.callbackHours} hours, at a time that suits you.` },
 ];
 

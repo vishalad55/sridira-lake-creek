@@ -26,7 +26,7 @@ export default function FloorPlans() {
             title="The horizon, now part of your home."
             body={
               <p>
-                Six 3 BHK corner layouts from 1700 to 1870 Sft. Unlock any one of them and we will send the
+                Six 3 BHK corner layouts from 1715 to 1870 SFT. Unlock any one of them and we will send the
                 full-resolution plans along with the price sheet.
               </p>
             }
@@ -82,7 +82,7 @@ export default function FloorPlans() {
                     </span>
                   </div>
                   <p className="mt-3 text-[0.9375rem] text-ink">{plan.sft}</p>
-                  <p className="mt-1 text-sm text-ink-faint">{plan.plinth}</p>
+                  <p className="mt-1 text-sm text-ink-faint">{plan.facing}</p>
 
                   {unlocked ? (
                     <a
@@ -101,7 +101,7 @@ export default function FloorPlans() {
                         open(LEAD_SOURCES.floorPlan, {
                           intent: plan.id,
                           title: `Unlock ${plan.label}`,
-                          blurb: `${plan.config} · ${plan.sft} · ${plan.plinth}. Share your details to reveal every layout on this page and receive the full-resolution plans.`,
+                          blurb: `${plan.config} · ${plan.sft} · ${plan.facing}. Share your details to reveal every layout on this page and receive the full-resolution plans.`,
                         })
                       }
                       className="btn btn-sm btn-primary mt-5 w-full"
@@ -117,8 +117,8 @@ export default function FloorPlans() {
 
         <Reveal delay={0.1}>
           <p className="mt-8 max-w-prose text-sm text-ink-faint">
-            Plinth areas are as per the sanctioned drawings. Layouts shown are indicative — confirm the final unit
-            plan with the sales team before booking.
+            Areas shown are Super Built-Up Area (SBUA) as per the brochure. Layouts are indicative — confirm the
+            final unit plan with the sales team before booking.
           </p>
         </Reveal>
       </div>

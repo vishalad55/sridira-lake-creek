@@ -43,15 +43,15 @@ export default function MasterPlan() {
               Highlights on plan
             </p>
             <ol className="mt-5 border-t-[0.8px] border-hairline">
-              {MASTER_PLAN.legend.map((item, i) => (
+              {MASTER_PLAN.legend.map((item) => (
                 <li
-                  key={item}
+                  key={item.n}
                   className="flex items-center gap-4 border-b-[0.8px] border-hairline py-3.5 text-[0.9375rem] text-ink"
                 >
                   <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-[0.8px] border-hairline bg-panel font-display text-xs text-ink-soft">
-                    {String(i + 1).padStart(2, '0')}
+                    {String(item.n).padStart(2, '0')}
                   </span>
-                  {item}
+                  {item.label}
                 </li>
               ))}
             </ol>

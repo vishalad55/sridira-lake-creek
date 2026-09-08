@@ -17,7 +17,7 @@ const nextConfig = {
   images: {
     unoptimized: isStaticExport,
     formats: ['image/avif', 'image/webp'],
-    deviceSizes: [360, 414, 640, 828, 1080, 1200, 1600, 1920],
+    deviceSizes: [360, 414, 640, 828, 1080, 1200, 1600, 1920, 2560],
   },
 };
 

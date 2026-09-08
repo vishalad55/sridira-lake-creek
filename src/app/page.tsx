@@ -20,6 +20,9 @@ import StatBar from '@/components/StatBar';
 import WhatsAppFab from '@/components/WhatsAppFab';
 import { AMENITY_CATEGORIES, BUILDER, CONTACT, FAQS, FLOOR_PLANS, PROJECT } from '@/lib/site';
 
+/** Pulls the numeric area out of a label like "SBUA 1835 SFT". */
+const areaOf = (sft: string) => Number(sft.match(/\d+/)?.[0] ?? 0);
+
 /**
  * Structured data. No price is published anywhere on this site, so no `offers`
  * node claims one — the listing describes the product and leaves pricing to the
@@ -63,8 +66,8 @@ function StructuredData() {
         geo: { '@type': 'GeoCoordinates', latitude: 13.0289, longitude: 77.6584 },
         floorSize: {
           '@type': 'QuantitativeValue',
-          minValue: 1700,
-          maxValue: 1870,
+          minValue: Math.min(...FLOOR_PLANS.map((p) => areaOf(p.sft))),
+          maxValue: Math.max(...FLOOR_PLANS.map((p) => areaOf(p.sft))),
           unitCode: 'FTK',
         },
         amenityFeature: AMENITY_CATEGORIES.flatMap((category) =>
@@ -76,9 +79,9 @@ function StructuredData() {
         ),
         containsPlace: FLOOR_PLANS.map((plan) => ({
           '@type': 'Apartment',
-          name: `${plan.label} — ${plan.config}`,
+          name: `${plan.label} — ${plan.config}, ${plan.facing}`,
           numberOfRooms: 3,
-          floorSize: { '@type': 'QuantitativeValue', value: parseInt(plan.sft, 10), unitCode: 'FTK' },
+          floorSize: { '@type': 'QuantitativeValue', value: areaOf(plan.sft), unitCode: 'FTK' },
         })),
       },
       {

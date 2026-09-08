@@ -272,28 +272,13 @@ directly, or a small serverless function) or the form will have nowhere to post.
 
 ## Before launch — open items
 
-These are placeholders on purpose. Nothing here was invented; none of it was in
-the source material.
+All project content — stats, unit areas, specifications, amenities, builder
+copy — now follows the **digital brochure**, which supersedes the original build
+brief. The items below are placeholders on purpose; nothing here was invented.
 
 - [ ] **RERA number.** `RERA No: [TO BE CONFIRMED]` appears in the footer and the
       FAQ. Karnataka RERA registration is legally required before advertising or
       selling an under-construction project in Bengaluru. **Blocking.**
-- [ ] **Brochure vs. brief conflict — decide which wins.** The digital brochure
-      and the original build brief disagree on hard numbers. The site currently
-      carries the **brief's** figures. Confirm and reconcile in `src/lib/site.ts`:
-      | Field | Build brief (live on site) | Digital brochure |
-      | --- | --- | --- |
-      | Floors per tower | 28 | 30+ |
-      | Homes in Phase 1 | 336 | 360, incl. 12 penthouses |
-      | Flat 01 area | 1810 Sft | 1835 SFT |
-      | Flat 02 area | 1765 Sft | 1762 SFT |
-      | Flat 03 area | 1831 Sft | 1830 SFT |
-      | Flat 05 area | 1700 Sft | 1715 SFT |
-      | Unit labelling | Plinth in Sqm | SBUA + facing (W/N/E) |
-      | Specifications | Earlier revision | Newer revision — veneer doors, digital lock, 800×1600 tiles, Jaguar CP, 100% DG backup, home automation, CCTV, boom barrier, OWC |
-      | Builder footprint | "Telangana, Karnataka & Andhra Pradesh" | "across South India" |
-      | Consultants | "MEP Consultants" | "SMEPF Consultants" |
-      Specifications are the urgent one — buyers read them line by line.
 - [ ] **Possession date.** Marked "TBD — confirm with sales team" in the FAQ and
       footer.
 - [ ] **Pricing and payment plan.** Deliberately absent sitewide.
@@ -301,9 +286,9 @@ the source material.
       reach the Google Sheet and Supabase but not the CRM. Add it when ready —
       no code change needed.
 - [ ] **Social links.** Placeholder `#` hrefs in `src/components/Footer.tsx`.
-- [ ] **Images.** Everything under `public/assets/` is brochure-resolution
-      (~1200px) extracted from the source PDFs. Swap in the marketing team's
-      high-res renders before launch.
+- [ ] **Images.** Hero slides are 2560px wide; section imagery is
+      brochure-resolution (~1200-1500px) extracted from the source PDFs. Swap in
+      the marketing team's originals before launch.
 - [ ] **Google Maps.** The embed is a public search embed centred on Horamavu
       Lake. Replace with the exact site pin, or a Maps Embed API key, once the
       plot coordinates are confirmed.
