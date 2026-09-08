@@ -22,8 +22,13 @@ export const CONTACT = {
   phone: process.env.NEXT_PUBLIC_CONTACT_PHONE || '+917411995037',
   phoneDisplay: process.env.NEXT_PUBLIC_CONTACT_PHONE_DISPLAY || '+91 74119 95037',
   email: process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'info@sridiralakecreek.in',
-  site: 'www.sridiralakecreek.in',
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.sridiralakecreek.in',
+  /**
+   * The live domain — not the sridiralakecreek.in address printed in the
+   * brochure, which does not serve this site. Drives the canonical URL, the
+   * Open Graph tags, robots.txt and sitemap.xml, so it has to be the real one.
+   */
+  site: 'www.sdlakecreek.online',
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.sdlakecreek.online',
   address: 'Sy no 75/2, 64/4 & 64/6, Horamavu Agara, Bengaluru, Karnataka 560043',
   addressShort: 'Horamavu Agara, Bengaluru',
   /** Kept separate from the call number so the two can diverge later. */
