@@ -236,7 +236,6 @@ async function getAccessToken(email: string, privateKey: string): Promise<string
 /** Writes the header row once, so a brand-new tab is self-describing. */
 async function ensureHeaderRow(token: string) {
   if (headerChecked) return;
-  headerChecked = true;
 
   const range = encodeURIComponent(a1Range(SHEET_TAB, 'A1:A1'));
   const res = await withTimeout(
@@ -247,10 +246,17 @@ async function ensureHeaderRow(token: string) {
       }),
     8000,
   );
-  if (!res.ok) return; // append will surface the real error
+  // Don't latch on failure: a warm instance that probed while the Sheets API
+  // was still disabled would otherwise skip the header row forever, and the
+  // first real rows would land with no column titles above them. The append
+  // that follows surfaces the underlying error either way.
+  if (!res.ok) return;
 
   const json = (await res.json()) as { values?: string[][] };
-  if (json.values?.length) return;
+  if (json.values?.length) {
+    headerChecked = true;
+    return;
+  }
 
   const writeRange = encodeURIComponent(a1Range(SHEET_TAB, 'A1'));
   await withTimeout(
@@ -266,6 +272,7 @@ async function ensureHeaderRow(token: string) {
       ),
     8000,
   );
+  headerChecked = true;
 }
 
 /**
