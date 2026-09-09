@@ -1,11 +1,12 @@
 /**
  * Thin, fail-safe wrappers around the Meta Pixel and GA4.
- * Both are optional — if the env var is unset the script never loads and these
- * become no-ops, so the form still works in dev and on preview deploys.
+ *
+ * Every call is a no-op when the tags are not loaded — which is the case in
+ * development and on preview deploys — so nothing here can break the form. The
+ * tag IDs and the decision to load them live in components/Analytics.tsx, which
+ * is server-only; this module gets bundled into the client, so it stays
+ * env-free.
  */
-
-export const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || '';
-export const GA_ID = process.env.NEXT_PUBLIC_GA_ID || '';
 
 declare global {
   interface Window {
@@ -60,6 +61,25 @@ export function trackLeadFormOpen({ source, intent }: LeadEventPayload) {
   }
   try {
     window.gtag?.('event', 'lead_form_open', { source, intent });
+  } catch {
+    /* no-op */
+  }
+}
+
+/**
+ * A tap on the phone number or the WhatsApp button. For a project like this a
+ * direct call is a conversion in its own right, so it is worth optimising ads
+ * against alongside form submissions.
+ */
+export function trackContact(channel: 'call' | 'whatsapp') {
+  if (typeof window === 'undefined') return;
+  try {
+    window.fbq?.('track', 'Contact', { channel, content_name: 'Sridira Lake Creek' });
+  } catch {
+    /* no-op */
+  }
+  try {
+    window.gtag?.('event', 'contact', { channel, project: 'Sridira Lake Creek' });
   } catch {
     /* no-op */
   }

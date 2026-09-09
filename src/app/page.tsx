@@ -1,5 +1,6 @@
 import Amenities from '@/components/Amenities';
 import Builder from '@/components/Builder';
+import ContactTracker from '@/components/ContactTracker';
 import ExitIntentModal from '@/components/ExitIntentModal';
 import FAQ from '@/components/FAQ';
 import FinalCTA from '@/components/FinalCTA';
@@ -133,6 +134,7 @@ export default function Page() {
       <WhatsAppFab />
       <MobileActionBar />
       <ExitIntentModal />
+      <ContactTracker />
     </LeadProvider>
   );
 }

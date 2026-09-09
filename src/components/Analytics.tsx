@@ -1,10 +1,27 @@
 import Script from 'next/script';
-import { GA_ID, META_PIXEL_ID } from '@/lib/analytics';
 
 /**
- * Both tags are opt-in via env vars and load after hydration, so an unconfigured
- * preview deploy ships zero third-party JS and keeps its Lighthouse score.
+ * Meta Pixel + GA4.
+ *
+ * The pixel ID is not a secret — it is visible in the page source of any site
+ * running it — so it ships as a default rather than as required configuration.
+ * `NEXT_PUBLIC_META_PIXEL_ID` still overrides it if you ever need to point a
+ * campaign at a different pixel.
+ *
+ * Both tags only load on the **production** deployment. Preview builds and local
+ * development deliberately ship zero third-party JS, so test traffic never
+ * pollutes conversion data and Lighthouse runs stay clean.
  */
+const DEFAULT_META_PIXEL_ID = '1819200635921006';
+
+const isProduction = (process.env.VERCEL_ENV ?? process.env.NODE_ENV) === 'production';
+
+const META_PIXEL_ID = isProduction
+  ? process.env.NEXT_PUBLIC_META_PIXEL_ID || DEFAULT_META_PIXEL_ID
+  : process.env.NEXT_PUBLIC_META_PIXEL_ID || '';
+
+const GA_ID = isProduction ? process.env.NEXT_PUBLIC_GA_ID || '' : process.env.NEXT_PUBLIC_GA_ID || '';
+
 export default function Analytics() {
   return (
     <>

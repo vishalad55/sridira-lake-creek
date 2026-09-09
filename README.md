@@ -129,8 +129,32 @@ it is validated on both the client and the server. **Don't remove it.**
 
 **On success:** the session is marked unlocked (all six floor plans resolve in
 place), a thank-you state promises a callback within `NEXT_PUBLIC_CALLBACK_HOURS`
-hours, the brochure is served immediately if `NEXT_PUBLIC_BROCHURE_URL` is set,
-and Meta Pixel `Lead` + GA4 `generate_lead` fire with a `source` parameter.
+hours, the brochure downloads immediately, and Meta Pixel `Lead` + GA4
+`generate_lead` fire with a `source` parameter.
+
+### Conversion tracking
+
+Meta Pixel `1819200635921006` ships as a default in
+[`Analytics.tsx`](src/components/Analytics.tsx) — a pixel ID is public by nature,
+so it needs no configuration. **Both tags load only on the production
+deployment**; preview builds and local dev ship zero third-party JS so test
+traffic never pollutes conversion data. Override with
+`NEXT_PUBLIC_META_PIXEL_ID`, and set `NEXT_PUBLIC_GA_ID` to switch GA4 on.
+
+| Event | Fires when | Meta | GA4 |
+| --- | --- | --- | --- |
+| PageView | Page load | `PageView` | `page_view` |
+| Form opened | Any lead CTA opens the modal | `InitiateCheckout` | `lead_form_open` |
+| **Lead** | Form submitted successfully | `Lead` | `generate_lead` |
+| Contact | Tap on any phone or WhatsApp link | `Contact` | `contact` |
+
+`Lead` and `InitiateCheckout` carry a `source` parameter naming the CTA that
+produced them (`floor-plan-unlock`, `hero-primary-cta`, `footer-form`, …), so ad
+performance can be attributed per section. Optimise campaigns against **Lead**.
+
+Contact clicks are caught by one delegated listener in
+[`ContactTracker.tsx`](src/components/ContactTracker.tsx) rather than a handler
+per link, so any phone or WhatsApp link added later is covered automatically.
 
 ### Where leads go (`src/lib/leads.ts`)
 
